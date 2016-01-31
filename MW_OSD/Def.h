@@ -95,7 +95,7 @@
   #define USE_FC_VOLTS_CONFIG
 #endif
 
-#if defined(TAULABS)
+#if defined(TAULABS) || defined(DRONIN)
   #define AMPERAGE_DIV 10
   #define HAS_ALARMS
 #endif

@@ -170,10 +170,13 @@ void serialMSPCheck()
     #ifdef GPSACTIVECHECK
      timer.GPS_active=GPSACTIVECHECK;
     #endif //GPSACTIVECHECK
+    
     uint8_t GPS_fix_temp=read8();
+    
     if (GPS_fix_temp){
       GPS_fix=1;
     }
+    
     GPS_numSat=read8();
     GPS_latitude = read32();
     GPS_longitude = read32();
@@ -196,14 +199,20 @@ void serialMSPCheck()
   if (cmdMSP==MSP_COMP_GPS)
   {
     GPS_distanceToHome=read16();
+
 #ifdef I2CGPS_DISTANCE
     gpsdistancefix();
 #endif
     
     GPS_directionToHome=read16();
+
 #ifdef GPSTIME
     read8(); //missing
     GPS_time = read32();        //local time of coord calc - haydent
+#endif
+
+#ifdef DRONIN
+    home_position_valid = read8();
 #endif
   }
 

@@ -511,6 +511,10 @@ uint16_t pMeterSum=0;
 uint16_t MwRssi=0;
 uint32_t GPS_time = 0;        //local time of coord calc - haydent
 
+#ifdef DRONIN
+  uint8_t home_position_valid = 0;
+#endif
+
 #ifdef HAS_ALARMS
 #define ALARM_OK 0
 #define ALARM_WARN 1

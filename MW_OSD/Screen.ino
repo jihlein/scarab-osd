@@ -964,15 +964,24 @@ void displayClimbRate(void)
 
 void displayDistanceToHome(void)
 {
+#ifdef DRONIN
+  if(!GPS_fix || !home_position_valid)
+    return;
+#else
   if(!GPS_fix)
     return;
+#endif
+  
   uint16_t dist;
+  
   if(Settings[S_UNITSYSTEM])
-    dist = GPS_distanceToHome * 3.2808;           // mt to feet
+    dist = GPS_distanceToHome * 3.2808;           // meters to feet
   else
-    dist = GPS_distanceToHome;                    // Mt
+    dist = GPS_distanceToHome;                    // meters
+  
   if(dist > distanceMAX)
     distanceMAX = dist;
+  
   if(!fieldIsVisible(GPS_distanceToHomePosition))
     return;
 
@@ -986,18 +995,15 @@ void displayDistanceToHome(void)
   if (dist>9999){
 
     if(Settings[S_UNITSYSTEM]){
-      dist = int(GPS_distanceToHome * 0.0062137);           // mt to miles*10
+      dist = int(GPS_distanceToHome * 0.0062137);           // meters to miles*10
     }
     else{
       dist = dist=dist/100;
     }
     itoa(dist, screenBuffer+1, 10);
+    
     uint8_t xx = FindNull();
-//    if (xx==2){ // if want to limit distance to 999 or less instead of 9999. This adds a leading 0 for improved display
-//      screenBuffer[2]=screenBuffer[1];
-//      screenBuffer[1]=0x30;
-//      xx++;
-//    }
+
     screenBuffer[xx]=screenBuffer[xx-1];
     screenBuffer[xx-1] = DECIMAL;
     xx++;
@@ -1012,10 +1018,17 @@ void displayDistanceToHome(void)
 
 void displayAngleToHome(void)
 {
-  if(!GPS_fix)
-      return;
- if(!fieldIsVisible(GPS_angleToHomePosition))
+#ifdef DRONIN
+  if(!GPS_fix || home_position_valid)
     return;
+#else
+  if(!GPS_fix)
+    return;
+#endif
+
+  if(!fieldIsVisible(GPS_angleToHomePosition))
+    return;
+    
   if(Settings[S_ANGLETOHOME]){
     if((GPS_numSat < MINSATFIX) && timer.Blink2hz)
       return;
@@ -1029,15 +1042,24 @@ void displayAngleToHome(void)
 
 void displayDirectionToHome(void)
 {
+#ifdef DRONIN
+  if(!GPS_fix || !home_position_valid)
+    return;
+#else
   if(!GPS_fix)
     return;
- if(!fieldIsVisible(GPS_directionToHomePosition))
+#endif
+
+  if(!fieldIsVisible(GPS_directionToHomePosition))
     return;
 
   if(GPS_distanceToHome <= 2 && timer.Blink2hz)
     return;
+    
   uint16_t position=getPosition(GPS_directionToHomePosition);
+  
   int16_t d = MwHeading + 180 + 360 - GPS_directionToHome;
+  
   d *= 4;
   d += 45;
   d = (d/90)%16;
